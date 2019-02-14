@@ -1,16 +1,21 @@
-FROM ubuntu:16.04
+FROM registry.access.redhat.com/jboss-webserver-3/webserver31-tomcat7-openshift
+MAINTAINER Paul Wehlage <paulwehlage@fico.com>
 
-RUN \
-  apt-get update && \
-  apt-get install -y nginx && \
-  echo "\ndaemon off;" >> /etc/nginx/nginx.conf
+USER root
 
-#ADD nginx.conf nginx.conf
-#RUN cp nginx.conf /etc/nginx/nginx.conf
+ENV DMP_DATA_DIR /app-root/runtime/data
+ENV DMP_REPO_DIR /app-root/runtime/repo
+ENV DMP_TMP_DIR /tmp
+ENV DMP_LOG_DIR /opt/webserver/logs
+ENV GC_MAX_METASPACE_SIZE 512
+ENV JAVA_OPTIONS -XX:MaxMetaspaceSize=512m
 
-# Define default command.
-ENTRYPOINT ["nginx"]
+COPY target/spring-boot-docker.war $JWS_HOME/webapps/ROOT.war
+#COPY target/greeting-3.4.0-SNAPSHOT/DMP-INF/ $DMP_DATA_DIR/DMP-INF/
 
-# Expose ports.
-EXPOSE 80
-EXPOSE 443
+RUN  mkdir /app-root/ && chmod -R 777 /app-root/
+
+
+#ENV JPDA_SUSPEND="y"
+
+EXPOSE 8000

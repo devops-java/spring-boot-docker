@@ -17,6 +17,13 @@
 
 	<properties>
 		<java.version>1.8</java.version>
+		<dmp.version>3.2.0-RELEASE</dmp.version>
+		<archetype.archive.name>${project.build.finalName}</archetype.archive.name>
+		<timestamp>${maven.build.timestamp}</timestamp>
+		<maven.build.timestamp.format>yyyy-mm-dd_hhmmss</maven.build.timestamp.format>
+		<dockerImageName>fico/${project.build.finalName}</dockerImageName>
+		<buildNumber>06462b768f</buildNumber>
+		<image.tag>3.4.0_${buildNumber}_${timestamp}</image.tag>
 	</properties>
 
 	<dependencies>
@@ -38,6 +45,7 @@
 	</dependencies>
 
 	<build>
+		<finalName>${project.artifactId}</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
@@ -45,9 +53,31 @@
 			</plugin>
 
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<descriptors>src/assembly/bin.xml</descriptors>
+					<finalName>${archetype.archive.name}</finalName>
+					<appendAssemblyId>false</appendAssemblyId>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
 				<groupId>com.spotify</groupId>
 				<artifactId>docker-maven-plugin</artifactId>
 				<version>1.2.0</version>
+				<configuration>
+					<dockerDirectory>.</dockerDirectory>
+					<imageName>${dockerImageName}:${image.tag}</imageName>
+				</configuration>
 				<executions>
 					<execution>
 						<id>build-image</id>
@@ -56,18 +86,19 @@
 							<goal>build</goal>
 						</goals>
 					</execution>
+					<!--
 					<execution>
 						<id>tag-image</id>
 						<phase>package</phase>
 						<goals>
 							<goal>tag</goal>
 						</goals>
+
 						<configuration>
-							<image>my-image:${project.version}</image>
-							<newName>registry.example.com/my-image:${project.version}</newName>
+							<image>${dockerImageName}</image>
+							<newName>fico/${project.build.finalName}</newName>
 						</configuration>
 					</execution>
-					<!--
 					<execution>
 						<id>push-image</id>
 						<phase>deploy</phase>

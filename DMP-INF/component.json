@@ -1,0 +1,64 @@
+{
+  "kind" : "component",
+  "type" : "MysqlComponent",
+  "name" : "Mysql Service",
+  "description" : "Configurable 'Hello World' component",
+  "version" : "1.0.2",
+  "artifactId" : "DMPMysql",
+  "groupId" : "com.fico",
+  "category" : "Examples",
+  "keywords" : ["example", "test"],
+  "dependencies" : [ {
+    "kind" : "engine",
+    "type" : "docker",
+    "name" : "Tomcat container",
+    "dockerfile" : "${dockerImageName}:${image.tag}",
+    "size" : "medium",
+    "scale" : true,
+    "disableAutoScaling" : false,
+	"envVars": {
+	  "APPD_SEGMENT_PRODUCT": "Platform-DMS-Core",
+	  "APPD_SERVICE": "DMS-Greeting"
+	},
+    "resourceReq" : {
+      "cpuRequest" : "100m",
+      "cpuLimit" : "1000m",
+      "memoryRequest" : "400Mi",
+      "memoryLimit" : "1000Mi"
+    },
+    "autoscaleDesc" : {
+      "targetCPU" : 70,
+      "maxReplicas" : 10,
+      "minReplicas" : 1
+    }
+  },
+  {
+  	"kind":"service",
+  	"name":"MysqlService",
+  	"id":"wmDB",
+  	"type":"MySQL",
+  	"dbVendor":"mysql"
+  }
+  
+  
+ ],
+  "license" : "public/license.txt",
+  "documentation" : "public/readme.html",
+  "authors" : [ {
+    "name" : "Andrei Palskoi",
+    "email" : "andreipalskoi@atheora.com"
+  } ],
+  "icons" : [ {
+    "size" : "64x64",
+    "url" : "public/img/icon64x64.png"
+  } ],
+  "screenshots": [ {
+      "url" : "public/img/ConfigurationUI.png",
+      "description" : "Configuration form"
+    },
+    {
+      "url" : "public/img/TestUI.png",
+      "description" : "Test form"
+    }
+  ]
+}
